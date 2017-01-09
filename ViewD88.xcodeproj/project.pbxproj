@@ -10,20 +10,47 @@
 		DCB71CD91E23EB6D005907D8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB71CD81E23EB6D005907D8 /* AppDelegate.swift */; };
 		DCB71CDB1E23EB6D005907D8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB71CDA1E23EB6D005907D8 /* ViewController.swift */; };
 		DCB71CDD1E23EB6D005907D8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DCB71CDC1E23EB6D005907D8 /* Assets.xcassets */; };
-		DCB71CE01E23EB6D005907D8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DCB71CDE1E23EB6D005907D8 /* Main.storyboard */; };
+		DCB71CE81E23EBE1005907D8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DCB71CE71E23EBE1005907D8 /* Main.storyboard */; };
+		DCB71CEB1E23EBFA005907D8 /* D88.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB71CE91E23EBFA005907D8 /* D88.swift */; };
+		DCB71CEE1E23EC17005907D8 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB71CED1E23EC17005907D8 /* Extensions.swift */; };
+		DCB71CFF1E23EC88005907D8 /* D88-test.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB71CEA1E23EBFA005907D8 /* D88-test.swift */; };
+		DCB71D001E23EC91005907D8 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB71CED1E23EC17005907D8 /* Extensions.swift */; };
+		DCB71D011E23EC91005907D8 /* D88.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB71CE91E23EBFA005907D8 /* D88.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DCB71CFA1E23EC6F005907D8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCB71CCD1E23EB6D005907D8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB71CD41E23EB6D005907D8;
+			remoteInfo = ViewD88;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		DCB71CD51E23EB6D005907D8 /* ViewD88.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ViewD88.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCB71CD81E23EB6D005907D8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DCB71CDA1E23EB6D005907D8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		DCB71CDC1E23EB6D005907D8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		DCB71CDF1E23EB6D005907D8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		DCB71CE11E23EB6D005907D8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DCB71CE71E23EBE1005907D8 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		DCB71CE91E23EBFA005907D8 /* D88.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = D88.swift; sourceTree = "<group>"; };
+		DCB71CEA1E23EBFA005907D8 /* D88-test.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "D88-test.swift"; path = "../ViewD88/D88-test.swift"; sourceTree = "<group>"; };
+		DCB71CED1E23EC17005907D8 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		DCB71CF51E23EC6E005907D8 /* ViewD88Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ViewD88Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCB71CF91E23EC6F005907D8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		DCB71CD21E23EB6D005907D8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DCB71CF21E23EC6E005907D8 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -37,6 +64,7 @@
 			isa = PBXGroup;
 			children = (
 				DCB71CD71E23EB6D005907D8 /* ViewD88 */,
+				DCB71CF61E23EC6F005907D8 /* ViewD88Tests */,
 				DCB71CD61E23EB6D005907D8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -45,6 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				DCB71CD51E23EB6D005907D8 /* ViewD88.app */,
+				DCB71CF51E23EC6E005907D8 /* ViewD88Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -55,10 +84,21 @@
 				DCB71CD81E23EB6D005907D8 /* AppDelegate.swift */,
 				DCB71CDA1E23EB6D005907D8 /* ViewController.swift */,
 				DCB71CDC1E23EB6D005907D8 /* Assets.xcassets */,
-				DCB71CDE1E23EB6D005907D8 /* Main.storyboard */,
+				DCB71CE71E23EBE1005907D8 /* Main.storyboard */,
 				DCB71CE11E23EB6D005907D8 /* Info.plist */,
+				DCB71CED1E23EC17005907D8 /* Extensions.swift */,
+				DCB71CE91E23EBFA005907D8 /* D88.swift */,
 			);
 			path = ViewD88;
+			sourceTree = "<group>";
+		};
+		DCB71CF61E23EC6F005907D8 /* ViewD88Tests */ = {
+			isa = PBXGroup;
+			children = (
+				DCB71CEA1E23EBFA005907D8 /* D88-test.swift */,
+				DCB71CF91E23EC6F005907D8 /* Info.plist */,
+			);
+			path = ViewD88Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -81,6 +121,24 @@
 			productReference = DCB71CD51E23EB6D005907D8 /* ViewD88.app */;
 			productType = "com.apple.product-type.application";
 		};
+		DCB71CF41E23EC6E005907D8 /* ViewD88Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DCB71CFC1E23EC6F005907D8 /* Build configuration list for PBXNativeTarget "ViewD88Tests" */;
+			buildPhases = (
+				DCB71CF11E23EC6E005907D8 /* Sources */,
+				DCB71CF21E23EC6E005907D8 /* Frameworks */,
+				DCB71CF31E23EC6E005907D8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DCB71CFB1E23EC6F005907D8 /* PBXTargetDependency */,
+			);
+			name = ViewD88Tests;
+			productName = ViewD88Tests;
+			productReference = DCB71CF51E23EC6E005907D8 /* ViewD88Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -95,6 +153,12 @@
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = 4AZ9573G2J;
 						ProvisioningStyle = Automatic;
+					};
+					DCB71CF41E23EC6E005907D8 = {
+						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = 4AZ9573G2J;
+						ProvisioningStyle = Automatic;
+						TestTargetID = DCB71CD41E23EB6D005907D8;
 					};
 				};
 			};
@@ -112,6 +176,7 @@
 			projectRoot = "";
 			targets = (
 				DCB71CD41E23EB6D005907D8 /* ViewD88 */,
+				DCB71CF41E23EC6E005907D8 /* ViewD88Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -122,7 +187,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				DCB71CDD1E23EB6D005907D8 /* Assets.xcassets in Resources */,
-				DCB71CE01E23EB6D005907D8 /* Main.storyboard in Resources */,
+				DCB71CE81E23EBE1005907D8 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DCB71CF31E23EC6E005907D8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,23 +205,32 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DCB71CEE1E23EC17005907D8 /* Extensions.swift in Sources */,
 				DCB71CDB1E23EB6D005907D8 /* ViewController.swift in Sources */,
+				DCB71CEB1E23EBFA005907D8 /* D88.swift in Sources */,
 				DCB71CD91E23EB6D005907D8 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DCB71CF11E23EC6E005907D8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DCB71CFF1E23EC88005907D8 /* D88-test.swift in Sources */,
+				DCB71D011E23EC91005907D8 /* D88.swift in Sources */,
+				DCB71D001E23EC91005907D8 /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXVariantGroup section */
-		DCB71CDE1E23EB6D005907D8 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				DCB71CDF1E23EB6D005907D8 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
+/* Begin PBXTargetDependency section */
+		DCB71CFB1E23EC6F005907D8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB71CD41E23EB6D005907D8 /* ViewD88 */;
+			targetProxy = DCB71CFA1E23EC6F005907D8 /* PBXContainerItemProxy */;
 		};
-/* End PBXVariantGroup section */
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		DCB71CE21E23EB6D005907D8 /* Debug */ = {
@@ -270,6 +351,36 @@
 			};
 			name = Release;
 		};
+		DCB71CFD1E23EC6F005907D8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 4AZ9573G2J;
+				INFOPLIST_FILE = ViewD88Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.kristallpojken.ViewD88Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ViewD88.app/Contents/MacOS/ViewD88";
+			};
+			name = Debug;
+		};
+		DCB71CFE1E23EC6F005907D8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 4AZ9573G2J;
+				INFOPLIST_FILE = ViewD88Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.kristallpojken.ViewD88Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ViewD88.app/Contents/MacOS/ViewD88";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -287,6 +398,14 @@
 			buildConfigurations = (
 				DCB71CE51E23EB6D005907D8 /* Debug */,
 				DCB71CE61E23EB6D005907D8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		DCB71CFC1E23EC6F005907D8 /* Build configuration list for PBXNativeTarget "ViewD88Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DCB71CFD1E23EC6F005907D8 /* Debug */,
+				DCB71CFE1E23EC6F005907D8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};
