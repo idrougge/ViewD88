@@ -83,11 +83,11 @@
 			children = (
 				DCB71CD81E23EB6D005907D8 /* AppDelegate.swift */,
 				DCB71CDA1E23EB6D005907D8 /* ViewController.swift */,
+				DCB71CED1E23EC17005907D8 /* Extensions.swift */,
+				DCB71CE91E23EBFA005907D8 /* D88.swift */,
 				DCB71CDC1E23EB6D005907D8 /* Assets.xcassets */,
 				DCB71CE71E23EBE1005907D8 /* Main.storyboard */,
 				DCB71CE11E23EB6D005907D8 /* Info.plist */,
-				DCB71CED1E23EC17005907D8 /* Extensions.swift */,
-				DCB71CE91E23EBFA005907D8 /* D88.swift */,
 			);
 			path = ViewD88;
 			sourceTree = "<group>";
