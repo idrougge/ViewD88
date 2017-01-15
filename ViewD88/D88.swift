@@ -202,6 +202,7 @@ struct D88Image:Diskimage {
     }
     func getFiles(tracknr:Int = 37) -> [FileEntry] {
         var files = [FileEntry]()
+        guard case .reserved = fat[fatTrack] else { return files }
         var data = Data()
         let sectorcount = 0 ..< 12
         for nr in sectorcount {
