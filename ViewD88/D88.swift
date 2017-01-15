@@ -150,12 +150,14 @@ struct D88Image:Diskimage {
         let headerdata = self.data.subdata(in: offset ..< offset+16)
         return Sector(data: headerdata)
     }
-    func getSector(track: Int, nr: Int) -> (sector: Sector, data: Data) {
+    func getSector(track: Int, nr: Int) -> (sector: Sector, data: Data)? {
         let trackdata = getTrack(track)
         let trackheaderdata = trackdata.subdata(in: 0..<16)
         let trackheader = Sector(data: trackheaderdata)
         let sectorsize = Int(trackheader.sectorsize)
         let offset = nr * (16 + sectorsize)
+        // Offset must not exceed sectorsize * sectorcount
+        guard offset <= (sectorsize + 16) * Int(trackheader.sectorcount) else { return nil }
         let sectorheaderdata = trackdata.subdata(in: offset ..< offset + 16)
         let sectordata = trackdata.subdata(in: offset + 16 ..< offset + 16 + sectorsize)
         let sector = Sector(data: sectorheaderdata)
@@ -206,8 +208,9 @@ struct D88Image:Diskimage {
         var data = Data()
         let sectorcount = 0 ..< 12
         for nr in sectorcount {
-            let sector = getSector(track: tracknr, nr: nr)
-            data.append(sector.data)
+            if let sector = getSector(track: tracknr, nr: nr) {
+                data.append(sector.data)
+            }
         }
         let entrylength = 16
         let datastride = stride(from: 0, to: data.count, by: entrylength)
@@ -242,7 +245,9 @@ struct D88Image:Diskimage {
     internal func dumpDisk(nr: Int) {    }
     func getFAT() -> [FATcell] {
         let fatSectorNr = 13
-        let fatSector = getSector(track: fatTrack, nr: fatSectorNr)
+        guard let fatSector = getSector(track: fatTrack, nr: fatSectorNr) else {
+            return [FATcell](repeatElement(.bad, count: 0x9f))
+        }
         return fatSector.data[0...0x9f].map{ FATcell($0) }
     }
     func cluster2phys(cluster:UInt8) -> (Int, CountableRange<Int>) {
