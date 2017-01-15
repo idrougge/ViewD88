@@ -18,10 +18,16 @@ enum DiskimageFormat {
 }
 protocol Diskimage{}
 
+protocol File {
+    var name:String {get}
+    var size:Int {get}
+}
+
 struct D88Image:Diskimage {
     let type:DiskimageFormat = .D88
     enum Filesystem {
-        case basic
+        case n88basic
+        case microdiskbasic
         case custom
     }
     struct Sector:CustomStringConvertible {
@@ -88,20 +94,7 @@ struct D88Image:Diskimage {
         let c,h,r,n:Int
         let content:[Byte]
     }
-    /*
-     func fatdecode(_ fat:FATcell?) -> String {
-     if let fat=fat {
-     switch fat {
-     case let .cluster(next: nr): return "\(nr)"
-     case let .sector(last: nr): return "\(nr)"
-     case .empty: return "tom"
-     case .reserved: return "reserverad"
-     }
-     }
-     return "fel"
-     }
-     */
-    struct FileEntry {
+    struct FileEntry:File {
         enum Attributes:Int {
             case ASC = 0x00
             case BIN = 0x01
@@ -117,21 +110,22 @@ struct D88Image:Diskimage {
             get {
                 let name = self.forename.trimmingCharacters(in: .whitespaces)
                 let ext = self.ext.trimmingCharacters(in: .whitespaces)
-                if ext.isEmpty {
-                    return name
-                }
-                return name + "." + ext
+                return ext.isEmpty ? name : name + "." + ext
             }
         }
         let attributes:Attributes
         let cluster:UInt8
-        let startaddr:UInt16
+        let startaddr:UInt16    // Startadress i N88-formatet lagras i första 16 bitarna i filen, slutadressen i följande 16 bitar
+        // Subtrahera ett på slutadressen
         let execaddr:UInt16
+        var size:Int = 0
         init(data:Data){
             self.forename = String(data: data.subdata(in: 0 ..< 6), encoding: String.Encoding.ascii) ?? "NONAME"
             self.ext = String(data: data.subdata(in: 6 ..< 9), encoding: .ascii) ?? ""
             self.cluster = data[10]
+            // FIXME: Nedanstående kod bara relevant för disk-basic
             self.startaddr = data.get(from: 11, to: 13)
+            // FIXME: Exekveringsadress lagras till synes inte alls i N88-formatet
             self.execaddr = data.get(from: 13, to: 15)
             self.attributes = Attributes(rawValue: Int(data[9])) ?? .BAD
         }
@@ -219,10 +213,26 @@ struct D88Image:Diskimage {
         for pos in datastride {
             let entrydata = data.subdata(in: pos ..< pos+16)
             guard entrydata[0] != 0xff else { break }   // 0xff marks end of FAT
-            let entry = FileEntry(data: entrydata)
+            var entry = FileEntry(data: entrydata)
+            entry.size = self.getFilesize(file: entry)
             files.append(entry)
         }
         return files
+    }
+    func getFilesize(file:FileEntry) -> Int {
+        var size=0
+        var cl = Int(file.cluster)
+        while cl < 192 {
+            switch self.fat[cl] {
+            case .sector(let last):
+                return size + (last * 256)
+            case .cluster(let next):
+                size += 2048
+                cl = Int(next)
+            default: return size
+            }
+        }
+        return size
     }
     // FIXME: Dessa bör nog avlägsnas
     internal func dumpCluster(nr: Int) {    }
@@ -239,18 +249,12 @@ struct D88Image:Diskimage {
         let track = cluster >> 1
         let sector = 8 * (cluster % 2)
         var sectorcount = 8
+        //guard case .sector(let last) = fat[cluster] else { return (track, sector ..< sector+sectorcount ) }
         switch fat[cluster] {
         case .sector(let last): sectorcount = last
         default: break
         }
         return (track, sector ..< sector+sectorcount)
-    }
-    func cluster2phys(cluster:FATcell) -> (Int, Int) {
-        switch cluster {
-        case .sector(let last): print(last)
-        default: print("hej")
-        }
-        return (36,0)
     }
     internal var data:Data
     internal var fatTrack = 37
@@ -258,11 +262,14 @@ struct D88Image:Diskimage {
     internal let tracks:Int
     internal var surfaces:Int
     internal var filesystem:Filesystem {
-        get {
-            return self.getTrack(fatTrack)[0] == 0xff ? .custom : .basic
+        // Om IPL innehåller strängen "PPC-8001 Micro Disk Basic" är det det filsystemet. Kanske utan det första P:et.
+        get {   // Cluster 0 = IPL
+            switch self.fat[74] {   // If FAT cluster (#74, 75) is reserved, it is likely a Basic filesystem
+            case .reserved: return .n88basic
+            default:        return .custom
+            }
         }
     }
-    // TODO: Bör ev trunkeras till sista giltiga spåret
     internal var tracktable:ContiguousArray<LongWord>
     internal var header:DiskHeader
     
@@ -270,7 +277,6 @@ struct D88Image:Diskimage {
         get {
             var rawData = Data()
             for track in 0 ..< tracks {
-                //print(#function,"track:",track,tracktable[track])
                 let trackdata = getSectors(track: track)
                 rawData.append(trackdata)
             }

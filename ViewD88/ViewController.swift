@@ -62,6 +62,9 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
             case .BAD: attr = "BAD"
             }
             cell.textField?.stringValue = attr
+        case "size"?:
+            let size = files[row].size
+            cell.textField?.stringValue = "\(size)"
         default: break
         }
         return cell
