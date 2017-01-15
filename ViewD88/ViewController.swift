@@ -31,6 +31,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         table.dataSource = self
         table.delegate = self
         table.allowsMultipleSelection = true
+        table.doubleAction = #selector(self.didDoubleClickRow)
     }
     
     override var representedObject: Any? {
@@ -59,7 +60,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
             case .RAW: attr = "RAW"
             case .RDP: attr = "read protect"
             case .WRP: attr = "write protect"
-            case .BAD: attr = "BAD"
+            case .BAD: attr = "???"
             }
             cell.textField?.stringValue = attr
         case "size"?:
@@ -72,6 +73,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     func tableViewSelectionDidChange(_ notification: Notification) {
         dumpFileButton.isEnabled = table.selectedRow != -1
     }
+    
     @IBAction func didPressSelectButton(_ sender: Any) {
         print(#function)
         let dialogue = NSOpenPanel()
@@ -81,6 +83,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         guard dialogue.runModal() == NSModalResponseOK, let url = dialogue.url else { return }
         textField.stringValue = url.lastPathComponent
         guard let imgdata = try? Data(contentsOf: url) else { return }
+        print("Image file: \(url)")
         diskimage = D88Image(data: imgdata)
         files = diskimage.getFiles()
         table.reloadData()
@@ -120,6 +123,9 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
             else {
             return
         }
+        writeFile(file, to: url)
+    }
+    func writeFile(_ file:D88Image.FileEntry, to url:URL) {
         let filedata = diskimage.getFile(file: file)
         do {
             try filedata.write(to: url)
@@ -128,7 +134,14 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         catch {
             print(error)
         }
-        
+    }
+    func didDoubleClickRow() {
+        print(#function, table.clickedRow)
+        let file = files[table.clickedRow]
+        let filename = file.name
+        let tempfile = NSTemporaryDirectory() + filename
+        writeFile(file, to: URL(fileURLWithPath: tempfile))
+        NSWorkspace.shared().openFile(tempfile, withApplication: "iHex")
     }
 }
 
