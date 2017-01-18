@@ -39,4 +39,10 @@ extension Data {
     func ascii() -> String {
         return String(data: self, encoding: .ascii) ?? "Data with illegal encoding"
     }
+    func cleanAscii() -> String {
+        let filtered = self.filter{
+            !CharacterSet.controlCharacters.contains(UnicodeScalar($0) )
+        }
+        return String(bytes: filtered, encoding: .ascii) ?? "Data with illegal encoding"
+    }
 }
