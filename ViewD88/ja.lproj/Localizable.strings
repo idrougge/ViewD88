@@ -1,0 +1,20 @@
+/* 
+  Localizable.strings
+  ViewD88
+
+  Created by Iggy Drougge on 2017-01-19.
+  Copyright © 2017 Iggy Drougge. All rights reserved.
+*/
+
+// File attributes
+"filetype.BAS" = "BASIC";
+"filetype.ASC" = "ASCII";
+"filetype.BIN" = "BINARY";
+"filetype.RAW" = "RAW";
+"filetype.RDP" = "read protect";
+"filetype.WRP" = "write protect";
+"filetype.BAD" = "???";
+
+// File dialogue strings
+"Save raw contents of disk" = "ディスクの内容をそのまま保存";
+"Save file from disk image" = "ファイルを保存";

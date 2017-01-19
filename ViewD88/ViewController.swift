@@ -24,6 +24,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         let imgpath = URL(fileURLWithPath: NSHomeDirectory()+"/Documents/d88-swift/basic.d88")
         fileurl = imgpath
         textField.stringValue = imgpath.lastPathComponent
+        // FIXME: No fatal error in release version
         guard let imgdata = try? Data(contentsOf: imgpath) else { fatalError("Fel vid inläsning av fil")}
         diskimage = D88Image(data: imgdata)
         files = diskimage.getFiles()
@@ -54,13 +55,13 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         case "type"?:
             let attr:String!
             switch files[row].attributes {
-            case .BAS: attr = "BASIC"
-            case .ASC: attr = "ASCII"
-            case .BIN: attr = "BINARY"
-            case .RAW: attr = "RAW"
-            case .RDP: attr = "read protect"
-            case .WRP: attr = "write protect"
-            case .BAD: attr = "???"
+            case .BAS: attr = NSLocalizedString("filetype.BAS", comment: "")
+            case .ASC: attr = NSLocalizedString("filetype.ASC", comment: "")
+            case .BIN: attr = NSLocalizedString("filetype.BIN", comment: "")
+            case .RAW: attr = NSLocalizedString("filetype.RAW", comment: "")
+            case .RDP: attr = NSLocalizedString("filetype.RDP", comment: "")
+            case .WRP: attr = NSLocalizedString("filetype.WRP", comment: "")
+            case .BAD: attr = NSLocalizedString("filetype.BAD", comment: "")
             }
             cell.textField?.stringValue = attr
         case "size"?:
@@ -94,7 +95,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         let filename = fileurl.deletingPathExtension().appendingPathExtension("2d").lastPathComponent
         print(#function,filename)
         let savepanel = NSSavePanel()
-        savepanel.title = "Save raw contents of disk"
+        savepanel.title = NSLocalizedString("Save raw contents of disk", comment: "")
         savepanel.nameFieldStringValue = filename
         guard savepanel.runModal() == NSModalResponseOK,
             let url = savepanel.url else { return }
@@ -115,7 +116,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         print(#function, file.name)
         let dialogue = NSSavePanel()
         //dialogue.message = "Spara här"
-        dialogue.title = "Save file from disk image"
+        dialogue.title = NSLocalizedString("Save file from disk image", comment: "")
         dialogue.nameFieldStringValue = file.name
         guard
             dialogue.runModal() == NSModalResponseOK,
