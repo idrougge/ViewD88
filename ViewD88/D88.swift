@@ -115,17 +115,17 @@ struct D88Image:Diskimage {
         }
         let attributes:Attributes
         let cluster:UInt8
-        let startaddr:UInt16    // Startadress i N88-formatet lagras i första 16 bitarna i filen, slutadressen i följande 16 bitar
-        // Subtrahera ett på slutadressen
+        let startaddr:UInt16    // Starting address in N88 format is saved in first 16 bits of file entry, ending address in following 16 bits.
+        // Subtract 1 from ending address.
         let execaddr:UInt16
         var size:Int = 0
         init(data:Data){
-            self.forename = String(data: data.subdata(in: 0 ..< 6), encoding: String.Encoding.ascii) ?? "NONAME"
-            self.ext = String(data: data.subdata(in: 6 ..< 9), encoding: .ascii) ?? ""
+            self.forename = data.subdata(in: 0 ..< 6).cleanAscii()
+            self.ext = ( String(data: data.subdata(in: 6 ..< 9), encoding: .ascii) ?? "" ).trimmingCharacters(in: .controlCharacters)
             self.cluster = data[10]
-            // FIXME: Nedanstående kod bara relevant för disk-basic
+            // FIXME: Below property is only relevant for Disk BASIC
             self.startaddr = data.get(from: 11, to: 13)
-            // FIXME: Exekveringsadress lagras till synes inte alls i N88-formatet
+            // FIXME: Execution address is apparently not used at all in N88 format
             self.execaddr = data.get(from: 13, to: 15)
             self.attributes = Attributes(rawValue: Int(data[9])) ?? .BAD
         }
@@ -189,14 +189,11 @@ struct D88Image:Diskimage {
     func getFile(cluster:UInt8) -> Data {
         switch fat[Int(cluster)] {
         case .cluster(let next):
-            print("\(cluster): .Cluster, next=\(next)")
             let (track, sectors) = cluster2phys(cluster: cluster)
             let data = getSectors(track: track, range: sectors)
             return data + getFile(cluster: next)
-        case .sector(let last):
-            print("\(cluster): .Sector, last=\(last)")
+        case .sector( _):
             let (track, sectors) = cluster2phys(cluster: cluster)
-            print("track: \(track), sectors: \(sectors)")
             return getSectors(track: track, range: sectors)
         default: break
         }
@@ -205,6 +202,7 @@ struct D88Image:Diskimage {
     func getFiles(tracknr:Int = 37) -> [FileEntry] {
         var files = [FileEntry]()
         guard case .n88basic = self.filesystem else { return files }
+        print("filesystem:",self.filesystem)
         var data = Data()
         let sectorcount = 0 ..< 12
         for nr in sectorcount {
@@ -212,10 +210,12 @@ struct D88Image:Diskimage {
                 data.append(sector.data)
             }
         }
+        //print("Got sector data of \(data.count) bytes")
         let entrylength = 16
         let datastride = stride(from: 0, to: data.count, by: entrylength)
         for pos in datastride {
             let entrydata = data.subdata(in: pos ..< pos+16)
+            guard entrydata.count == 16 else { break }
             guard entrydata[0] != 0xff else { break }   // 0xff marks end of FAT
             var entry = FileEntry(data: entrydata)
             entry.size = self.getFilesize(file: entry)
@@ -224,25 +224,27 @@ struct D88Image:Diskimage {
         return files
     }
     func getFilesize(file:FileEntry) -> Int {
+        print(#function,file)
         var size=0
         var cl = Int(file.cluster)
-        while cl < 192 {
+        guard cl < self.fat.count else { return size }
+        print("cl:",cl)
+        print("fat:",fat.count)
+        // FIXME: Cluster chaining can reach infinite loop
+        while cl < 0x9f {
+            //print(cl,fat[cl])
             switch self.fat[cl] {
             case .sector(let last):
-                return size + (last * 256)
+                return size + (last * 256)  // Hardcoded value is bad
             case .cluster(let next):
-                size += 2048
+                guard Int(next) != cl else { return size }
+                size += 2048                // Hardcoded value is bad?
                 cl = Int(next)
             default: return size
             }
         }
         return size
     }
-    // FIXME: Dessa bör nog avlägsnas
-    internal func dumpCluster(nr: Int) {    }
-    internal func dumpTrack(nr: Int) {    }
-    internal func dumpSector(nr: Int) {    }
-    internal func dumpDisk(nr: Int) {    }
     func getFAT() -> [FATcell] {
         let fatSectorNr = 13
         guard let fatSector = getSector(track: fatTrack, nr: fatSectorNr) else {
@@ -262,13 +264,14 @@ struct D88Image:Diskimage {
         }
         return (track, sector ..< sector+sectorcount)
     }
-    internal var data:Data
-    internal var fatTrack = 37
-    internal var fat:[FATcell] = []
-    internal let tracks:Int
-    internal var surfaces:Int
-    internal var filesystem:Filesystem {
-        // Om IPL innehåller strängen "PPC-8001 Micro Disk Basic" är det det filsystemet. Kanske utan det första P:et.
+    fileprivate var data:Data
+    fileprivate var fatTrack = 37
+    fileprivate var fat:[FATcell] = []
+    public let tracks:Int
+    public var surfaces:Int
+    public var filesystem:Filesystem {
+        // If IPL contains string "PPC-8001 Micro Disk Basic" that is the filesystem. Maybe without inital P.
+        // One may guard by checking if IPL is reserved in FAT.
         get {   // Cluster 0 = IPL
             switch self.fat[74] {   // If FAT cluster (#74, 75) is reserved, it is likely a Basic filesystem
             case .reserved: return .n88basic
@@ -299,6 +302,6 @@ struct D88Image:Diskimage {
         self.header = DiskHeader(data: data.subdata(in: 0..<32))
         self.surfaces = self.header.disktype == ._1D ? 1 : 2
         self.fat = getFAT()
-        print("Skapade D88-objekt på \(data.count) byte med \(surfaces) sidor och med \(tracks) spår")
+        print("Created D88 object of \(data.count) bytes with \(surfaces) surfaces and \(tracks) tracks")
     }
 }

@@ -9,11 +9,11 @@
 // File attributes
 "filetype.BAS" = "BASIC";
 "filetype.ASC" = "ASCII";
-"filetype.BIN" = "BINARY";
+"filetype.BIN" = "バイナリー";
 "filetype.RAW" = "RAW";
 "filetype.RDP" = "read protect";
 "filetype.WRP" = "write protect";
-"filetype.BAD" = "???";
+"filetype.BAD" = "不明";
 
 // File dialogue strings
 "Save raw contents of disk" = "ディスクの内容をそのまま保存";

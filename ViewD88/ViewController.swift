@@ -48,7 +48,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         //print(#function,tableColumn!.identifier)
         let cell = tableView.make(withIdentifier: tableColumn!.identifier, owner: self) as! NSTableCellView
         switch tableColumn?.identifier {
-        case let id where id == "nr": cell.textField?.stringValue = "nr \(row)"
+        case let id where id == "nr": cell.textField?.stringValue = "\(row)"
         case "name"?:
             let name = files[row].name
             cell.textField?.stringValue = name
@@ -139,10 +139,18 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     func didDoubleClickRow() {
         print(#function, table.clickedRow)
         let file = files[table.clickedRow]
-        let filename = file.name
-        let tempfile = NSTemporaryDirectory() + filename
+        /*
+         let filename = file.name
+         let tempfile = NSTemporaryDirectory() + filename
         writeFile(file, to: URL(fileURLWithPath: tempfile))
         NSWorkspace.shared().openFile(tempfile, withApplication: "iHex")
+         */
+        guard file.attributes == .BAS else {
+            print("Not a BASIC file")
+            return
+        }
+        let filedata = diskimage.getFile(file: file)
+        N88basic.parse(imgdata: filedata)
     }
 }
 
