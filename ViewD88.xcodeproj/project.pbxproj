@@ -11,6 +11,8 @@
 		DC3C002C1E31070400E628D4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC3C002A1E31070400E628D4 /* Main.storyboard */; };
 		DC6C4D541E33A522001B00AD /* N88Basic.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC6C4D531E33A522001B00AD /* N88Basic.swift */; };
 		DC6C4D551E33A522001B00AD /* N88Basic.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC6C4D531E33A522001B00AD /* N88Basic.swift */; };
+		DC6C4D571E33B260001B00AD /* N88BasicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC6C4D561E33B260001B00AD /* N88BasicViewController.swift */; };
+		DC6C4D581E33B260001B00AD /* N88BasicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC6C4D561E33B260001B00AD /* N88BasicViewController.swift */; };
 		DCB71CD91E23EB6D005907D8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB71CD81E23EB6D005907D8 /* AppDelegate.swift */; };
 		DCB71CDB1E23EB6D005907D8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB71CDA1E23EB6D005907D8 /* ViewController.swift */; };
 		DCB71CDD1E23EB6D005907D8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DCB71CDC1E23EB6D005907D8 /* Assets.xcassets */; };
@@ -37,6 +39,7 @@
 		DC3C002E1E31078D00E628D4 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Main.strings; sourceTree = "<group>"; };
 		DC3C002F1E31078D00E628D4 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DC6C4D531E33A522001B00AD /* N88Basic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = N88Basic.swift; sourceTree = "<group>"; };
+		DC6C4D561E33B260001B00AD /* N88BasicViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = N88BasicViewController.swift; sourceTree = "<group>"; };
 		DCB71CD51E23EB6D005907D8 /* ViewD88.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ViewD88.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCB71CD81E23EB6D005907D8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DCB71CDA1E23EB6D005907D8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -91,6 +94,7 @@
 			children = (
 				DCB71CD81E23EB6D005907D8 /* AppDelegate.swift */,
 				DCB71CDA1E23EB6D005907D8 /* ViewController.swift */,
+				DC6C4D561E33B260001B00AD /* N88BasicViewController.swift */,
 				DCB71CED1E23EC17005907D8 /* Extensions.swift */,
 				DCB71CE91E23EBFA005907D8 /* D88.swift */,
 				DC6C4D531E33A522001B00AD /* N88Basic.swift */,
@@ -216,6 +220,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC6C4D571E33B260001B00AD /* N88BasicViewController.swift in Sources */,
 				DCB71CEE1E23EC17005907D8 /* Extensions.swift in Sources */,
 				DCB71CDB1E23EB6D005907D8 /* ViewController.swift in Sources */,
 				DC6C4D541E33A522001B00AD /* N88Basic.swift in Sources */,
@@ -232,6 +237,7 @@
 				DC6C4D551E33A522001B00AD /* N88Basic.swift in Sources */,
 				DCB71D011E23EC91005907D8 /* D88.swift in Sources */,
 				DCB71D001E23EC91005907D8 /* Extensions.swift in Sources */,
+				DC6C4D581E33B260001B00AD /* N88BasicViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

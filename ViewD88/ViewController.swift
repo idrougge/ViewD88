@@ -150,7 +150,12 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
             return
         }
         let filedata = diskimage.getFile(file: file)
-        N88basic.parse(imgdata: filedata)
+        let text = N88basic.parse(imgdata: filedata)
+        let storyboard = NSStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateController(withIdentifier: "Basic viewer") as! N88BasicViewController
+        //self.presentViewControllerAsSheet(vc)
+        self.presentViewControllerAsModalWindow(vc)
+        vc.textView.string = text
     }
 }
 

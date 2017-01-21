@@ -6,13 +6,8 @@
 //  Copyright © 2017 Iggy Drougge. All rights reserved.
 //
 
-//: Playground - noun: a place where people can play
-
 import Foundation
 
-//guard let imgdata = try? Data(contentsOf: URL(fileURLWithPath: NSHomeDirectory()+"/Desktop/dtools.j88")) else { fatalError("Fel vid inläsning av fil")}
-//guard let imgdata = try? Data(contentsOf: URL(fileURLWithPath: NSHomeDirectory()+"/Desktop/@cc4h.j88")) else { fatalError("Fel vid inläsning av fil")}
-//guard let imgdata = try? Data(contentsOf: URL(fileURLWithPath: NSHomeDirectory()+"/Desktop/GAME")) else { fatalError("Fel vid inläsning av fil")}
 struct N88basic {
     enum Token:UInt8 {
         case newline = 0x00
@@ -94,7 +89,7 @@ struct N88basic {
          0xD7: "MOTOR",		0xD8: "PEN",		0xD9: "DATE$",		0xDA: "COM",		0xDB: "KEY",		0xDC: "TIME$",
          0xDD: "WBYTE",		0xDE: "RBYTE",		0xDF: "POLL",		0xE0: "ISET",		0xE1: "IEEE",		0xE2: "IRESET",
          0xE3: "STATUS",	0xE4: "CMD"]
-    static func parse(imgdata:Data) {
+    static func parse(imgdata:Data) -> String {
         var sourceline:[UInt8] = [0x54, 0x45, 0x58, 0x54, 0x2E, 0x54, 0x4F, 0x50, 0xF1, 0xFF, 0x97, 0x28, 0x0C, 0x59, 0xE6, 0x29, 0xF5, 0x1C, 0x00]
         //sourceline = Array(imgdata[0..<128])
         sourceline = Array(imgdata)
@@ -102,6 +97,7 @@ struct N88basic {
         guard startptr < sourceline.count, sourceline[startptr] == 0x00 else { fatalError("Pointer to program start invalid") }
         sourceline = Array(sourceline.dropFirst(startptr))
         var line = ""
+        var fulltext = ""
         sourceline.removeFirst()
         line = "\(Int(sourceline.removeFirst()) + Int(sourceline.removeFirst())*256) "
         var isString = false
@@ -141,12 +137,16 @@ struct N88basic {
                     line += "float: \(f)"
                 case .newline where args[0] | args[1] == 0: // Reached EOT marker
                     print(line)
+                    fulltext += line
+                    return fulltext
                     break mainloop
                 case .newline:
                     print(line)
+                    fulltext += line + "\n"
                     line = "\(Int(args[2]) + Int(args[3])*256) "
                 default: print(k,t)
                 }
         }
+        return fulltext
     }
 }
