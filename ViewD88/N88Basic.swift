@@ -125,7 +125,7 @@ struct N88basic {
                 case .keyword: //print(Keyword(rawValue: k) ?? "?")
                     line += (N88basic.keywords[k] ?? "?")
                 case .ffkeyword: line += N88basic.ffkeywords[args.first!] ?? "?"
-                case .verysmallinteger: line += "\(k & 0x0f)"
+                case .verysmallinteger: line += "\(k & 0x0f - 1)"
                 case .smallinteger: line += "\(args)"
                 case .biginteger: line += "\((Int(args[0]) + Int(args[1])*256))"
                 case .hexadecimal: line += (String(format: "&H%X%02X", args[1], args[0]))
