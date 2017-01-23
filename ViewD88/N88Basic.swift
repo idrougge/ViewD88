@@ -128,7 +128,7 @@ struct N88basic {
                 case .verysmallinteger: line += "\(k & 0x0f)"
                 case .smallinteger: line += "\(args)"
                 case .biginteger: line += "\((Int(args[0]) + Int(args[1])*256))"
-                case .hexadecimal: line += (String(format: "&H%0X%0X", args[1], args[0]))
+                case .hexadecimal: line += (String(format: "&H%X%02X", args[1], args[0]))
                 case .linenumberafterexec, .linenumber: line += "\(Int(args[0]) + Int(args[1])*256)"
                 case .float:
                     let data:Data = Data(args)
