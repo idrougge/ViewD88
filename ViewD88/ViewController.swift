@@ -153,9 +153,10 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         let text = N88basic.parse(imgdata: filedata)
         let storyboard = NSStoryboard(name: "Main", bundle: nil)
         let vc = storyboard.instantiateController(withIdentifier: "Basic viewer") as! N88BasicViewController
-        //self.presentViewControllerAsSheet(vc)
         self.presentViewControllerAsModalWindow(vc)
+        vc.textView.textStorage?.font = NSFont(name: "Monaco", size: 11)
         vc.textView.string = text
+        vc.title = file.name
     }
 }
 

@@ -128,13 +128,18 @@ struct N88basic {
                 case .verysmallinteger: line += "\(k & 0x0f)"
                 case .smallinteger: line += "\(args)"
                 case .biginteger: line += "\((Int(args[0]) + Int(args[1])*256))"
-                case .hexadecimal: line += (String(format: "&H%0X%0X", args[0], args[1]))
+                case .hexadecimal: line += (String(format: "&H%0X%0X", args[1], args[0]))
                 case .linenumberafterexec, .linenumber: line += "\(Int(args[0]) + Int(args[1])*256)"
                 case .float:
                     let data:Data = Data(args)
                     let f:Float32
                     f=data.withUnsafeBytes{$0.pointee}
-                    line += "float: \(f)"
+                    line += "float: \(f) == ("
+                    for bcd in args {
+                        line += "\((bcd & 0xf0) >> 4) "
+                        line += "\(bcd & 0x0f) "
+                    }
+                    line+=")"
                 case .newline where args[0] | args[1] == 0: // Reached EOT marker
                     print(line)
                     fulltext += line
