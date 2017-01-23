@@ -131,20 +131,25 @@ struct N88basic {
                 case .hexadecimal: line += (String(format: "&H%X%02X", args[1], args[0]))
                 case .linenumberafterexec, .linenumber: line += "\(Int(args[0]) + Int(args[1])*256)"
                 case .float:
-                    let data:Data = Data(args)
-                    let f:Float32
-                    f=data.withUnsafeBytes{$0.pointee}
-                    line += "float: \(f) == ("
-                    for bcd in args {
-                        line += "\((bcd & 0xf0) >> 4) "
-                        line += "\(bcd & 0x0f) "
-                    }
-                    line+=")"
+                    // 00 00 00 91 = 65536!
+                    var ieee = args
+                    ieee[3] = args[2] & 0x80 // sign bit
+                    let ieee_exp = args[3] - 2
+                    ieee[3] |= ieee_exp >> 1
+                    ieee[2] = ieee_exp << 7
+                    ieee[2] |= (args[2] & 0x7f) //  0111 1111
+                    let f:Float32 = Data(ieee).withUnsafeBytes{$0.pointee}
+                    line += String(format: "%*.*F!", f)
+                case .double:
+                    // FIXME
+                    line += "DOUBLE PRECISION FLOATING POINT VALUE / 倍密実数"
+                case .octal:
+                    line += (String(format: "&O%o%02o", args[1], args[0]))
                 case .newline where args[0] | args[1] == 0: // Reached EOT marker
                     print(line)
                     fulltext += line
                     return fulltext
-                    break mainloop
+                    //break mainloop
                 case .newline:
                     print(line)
                     fulltext += line + "\n"
