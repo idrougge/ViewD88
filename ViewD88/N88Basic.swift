@@ -9,6 +9,8 @@
 import Foundation
 
 struct N88basic {
+    // FIXME: Apostrophe is parsed as ":REM?"
+    // FIXME: DATA literals should be parsed literally (check r-play.bas on BASIC disk)
     enum Token:UInt8 {
         case newline = 0x00
         case octal = 0x0b
@@ -28,7 +30,7 @@ struct N88basic {
         /// Number of bytes used as argument to token
         func bytes() -> Int {
             switch self {
-            case .newline: return 4 // Newline is followed by linkpointer (two bytes) and linenumber (two bytes)
+            case .newline: return 4 // Newline is followed by linkpointer (two bytes) to next line and linenumber (two bytes)
             case .literal: return 0
             case .keyword: return 0
             case .ffkeyword: return 1
@@ -131,18 +133,11 @@ struct N88basic {
                 case .hexadecimal: line += (String(format: "&H%X%02X", args[1], args[0]))
                 case .linenumberafterexec, .linenumber: line += "\(Int(args[0]) + Int(args[1])*256)"
                 case .float:
-                    // 00 00 00 91 = 65536!
-                    var ieee = args
-                    ieee[3] = args[2] & 0x80 // sign bit
-                    let ieee_exp = args[3] - 2
-                    ieee[3] |= ieee_exp >> 1
-                    ieee[2] = ieee_exp << 7
-                    ieee[2] |= (args[2] & 0x7f) //  0111 1111
-                    let f:Float32 = Data(ieee).withUnsafeBytes{$0.pointee}
-                    line += String(format: "%*.*F!", f)
+                    let f = Float32(mssingle: args)
+                    line += String(format: "%g!", f)
                 case .double:
-                    // FIXME
-                    line += "DOUBLE PRECISION FLOATING POINT VALUE / 倍密実数"
+                    let f = Float64(msdouble: args)
+                    line += String(describing: NSNumber(value: f)) + "#"
                 case .octal:
                     line += (String(format: "&O%o%02o", args[1], args[0]))
                 case .newline where args[0] | args[1] == 0: // Reached EOT marker

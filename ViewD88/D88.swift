@@ -49,6 +49,7 @@ struct D88Image:Diskimage {
         var description:String {
             return "Cyl: \(c) Head: \(h) Sector: \(r) Sectorlength: \(n) Sectors: \(sectorcount) Sector size: \(sectorsize)"
         }
+        // FIXME: Incorrect image format (MESS format) may report head counts > 2
         init(data:Data) {
             self = data.get(from: data.startIndex, to: data.endIndex)
         }
