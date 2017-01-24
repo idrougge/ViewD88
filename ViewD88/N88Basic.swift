@@ -25,6 +25,7 @@ struct N88basic {
         case keyword = 0x81 // ...0xfe
         case ffkeyword = 0xff
         case quote = 0x22
+        case data = 0x84
         case literal = 0x40
         //case illegal = -1
         /// Number of bytes used as argument to token
@@ -44,6 +45,7 @@ struct N88basic {
             case .linenumberafterexec: return 2
             case .float: return 4
             case .double: return 8
+            case .data: return 0
                 //case .illegal: return 0
             }
         }
@@ -92,9 +94,7 @@ struct N88basic {
          0xDD: "WBYTE",		0xDE: "RBYTE",		0xDF: "POLL",		0xE0: "ISET",		0xE1: "IEEE",		0xE2: "IRESET",
          0xE3: "STATUS",	0xE4: "CMD"]
     static func parse(imgdata:Data) -> String {
-        var sourceline:[UInt8] = [0x54, 0x45, 0x58, 0x54, 0x2E, 0x54, 0x4F, 0x50, 0xF1, 0xFF, 0x97, 0x28, 0x0C, 0x59, 0xE6, 0x29, 0xF5, 0x1C, 0x00]
-        //sourceline = Array(imgdata[0..<128])
-        sourceline = Array(imgdata)
+        var sourceline = Array(imgdata)
         let startptr = Int(sourceline[0])
         guard startptr < sourceline.count, sourceline[startptr] == 0x00 else { fatalError("Pointer to program start invalid") }
         sourceline = Array(sourceline.dropFirst(startptr))
@@ -114,6 +114,12 @@ struct N88basic {
                     //let endquote = sourceline.index(of: Token.quote.rawValue) ?? 0
                     //line += String(bytes: sourceline.prefix(through: endquote), encoding: .shiftJIS) ?? "?"
                     continue
+                }
+                if t == .data {
+                    let endofline = sourceline.index(of: 0x00) ?? 0 // Or: use linepointer?
+                    
+                    line += String(bytes: sourceline.prefix(upTo: endofline), encoding: .shiftJIS) ?? "BAD DATA"
+                    sourceline.removeFirst(endofline)
                 }
                 if isString {
                     line += String(bytes: [k], encoding: .shiftJIS) ?? "?"
