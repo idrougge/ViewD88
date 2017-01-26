@@ -13,8 +13,8 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     @IBOutlet var table: NSTableView!
     @IBOutlet var textField: NSTextField!
     @IBOutlet var dumpFileButton: NSButton!
-    var diskimage:D88Image!
-    var files:[D88Image.FileEntry]!
+    var diskimage:D88Image?
+    var files:[D88Image.FileEntry] = []
     var fileurl:URL?
     
     override func viewDidLoad() {
@@ -24,11 +24,10 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         let imgpath = URL(fileURLWithPath: NSHomeDirectory()+"/Documents/d88-swift/basic.d88")
         fileurl = imgpath
         textField.stringValue = imgpath.lastPathComponent
-        // FIXME: No fatal error in release version
-        guard let imgdata = try? Data(contentsOf: imgpath) else { fatalError("Fel vid inläsning av fil")}
-        diskimage = D88Image(data: imgdata)
-        files = diskimage.getFiles()
-        
+        if let imgdata = try? Data(contentsOf: imgpath) {
+            diskimage = D88Image(data: imgdata)
+            files = diskimage!.getFiles()
+        }
         table.dataSource = self
         table.delegate = self
         table.allowsMultipleSelection = true
@@ -86,7 +85,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         guard let imgdata = try? Data(contentsOf: url) else { return }
         print("Image file: \(url)")
         diskimage = D88Image(data: imgdata)
-        files = diskimage.getFiles()
+        files = diskimage!.getFiles()
         table.reloadData()
         
     }
@@ -99,9 +98,9 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         savepanel.nameFieldStringValue = filename
         guard savepanel.runModal() == NSModalResponseOK,
             let url = savepanel.url else { return }
-        let data = diskimage.rawData
+        let data = diskimage?.rawData
         do {
-            try data.write(to: url)
+            try data?.write(to: url)
         }
         catch {
             print(error)
@@ -127,10 +126,10 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         writeFile(file, to: url)
     }
     func writeFile(_ file:D88Image.FileEntry, to url:URL) {
-        let filedata = diskimage.getFile(file: file)
+        let filedata = diskimage?.getFile(file: file)
         do {
-            try filedata.write(to: url)
-            print("Sparade fil på \(url)")
+            try filedata?.write(to: url)
+            print("Saved file to \(url)")
         }
         catch {
             print(error)
@@ -149,7 +148,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
             print("Not a BASIC file")
             return
         }
-        let filedata = diskimage.getFile(file: file)
+        guard let filedata = diskimage?.getFile(file: file) else { return }
         let text = N88basic.parse(imgdata: filedata)
         let storyboard = NSStoryboard(name: "Main", bundle: nil)
         let vc = storyboard.instantiateController(withIdentifier: "Basic viewer") as! N88BasicViewController
