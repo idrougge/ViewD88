@@ -102,28 +102,22 @@ struct N88basic {
         var fulltext = ""
         sourceline.removeFirst()
         line = "\(Int(sourceline.removeFirst()) + Int(sourceline.removeFirst())*256) "
-        var isString = false
         mainloop:
             while !sourceline.isEmpty {
                 let k = sourceline.removeFirst()
                 let t = Token(k)
                 guard sourceline.count >= t.bytes() else { break }
                 if t == .quote {
-                    isString = !isString
                     line += "\""
-                    //let endquote = sourceline.index(of: Token.quote.rawValue) ?? 0
-                    //line += String(bytes: sourceline.prefix(through: endquote), encoding: .shiftJIS) ?? "?"
+                    let endquote = sourceline.index(of: Token.quote.rawValue) ?? 0
+                    line += String(bytes: sourceline.prefix(through: endquote), encoding: .shiftJIS) ?? "?"
+                    sourceline.removeFirst(endquote+1)
                     continue
                 }
                 if t == .data {
                     let endofline = sourceline.index(of: 0x00) ?? 0 // Or: use linepointer?
-                    
                     line += String(bytes: sourceline.prefix(upTo: endofline), encoding: .shiftJIS) ?? "BAD DATA"
                     sourceline.removeFirst(endofline)
-                }
-                if isString {
-                    line += String(bytes: [k], encoding: .shiftJIS) ?? "?"
-                    continue
                 }
                 let args:[UInt8] = Array(sourceline[0..<t.bytes()])
                 sourceline.removeFirst(t.bytes())
