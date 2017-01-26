@@ -121,7 +121,8 @@ struct D88Image:Diskimage {
         let execaddr:UInt16
         var size:Int = 0
         init(data:Data){
-            self.forename = data.subdata(in: 0 ..< 6).cleanAscii()
+            //self.forename = data.subdata(in: 0 ..< 6).cleanAscii()
+            self.forename = String(data: data.subdata(in: 0 ..< 6), encoding: .shiftJIS) ?? "BAD NAME"
             self.ext = ( String(data: data.subdata(in: 6 ..< 9), encoding: .ascii) ?? "" ).trimmingCharacters(in: .controlCharacters)
             self.cluster = data[10]
             // FIXME: Below property is only relevant for Disk BASIC
