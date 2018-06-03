@@ -252,7 +252,7 @@ struct D88Image:Diskimage {
         guard let fatSector = getSector(track: fatTrack, nr: fatSectorNr) else {
             return [FATcell](repeatElement(.bad, count: 0x9f))
         }
-        return fatSector.data[0...0x9f].map{ FATcell($0) }
+        return fatSector.data[0...0x9f].map(FATcell.init)
     }
     func cluster2phys(cluster:UInt8) -> (Int, CountableRange<Int>) {
         let cluster = Int(cluster)

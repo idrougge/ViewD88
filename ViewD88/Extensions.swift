@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Integer {
+extension BinaryInteger {
     func hex() -> String {
         return "$"+String(format:"%x", self as! CVarArg)
     }

@@ -45,8 +45,8 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     }
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         //print(#function,tableColumn!.identifier)
-        let cell = tableView.make(withIdentifier: tableColumn!.identifier, owner: self) as! NSTableCellView
-        switch tableColumn?.identifier {
+        let cell = tableView.makeView(withIdentifier: tableColumn!.identifier, owner: self) as! NSTableCellView
+        switch tableColumn?.identifier.rawValue {
         case let id where id == "nr": cell.textField?.stringValue = "\(row)"
         case "name"?:
             let name = files[row].name
@@ -80,7 +80,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         dialogue.allowsMultipleSelection = false
         dialogue.canChooseDirectories = false
         dialogue.allowedFileTypes = ["d88","d77","d20"]
-        guard dialogue.runModal() == NSModalResponseOK, let url = dialogue.url else { return }
+        guard dialogue.runModal() == NSApplication.ModalResponse.OK, let url = dialogue.url else { return }
         textField.stringValue = url.lastPathComponent
         guard let imgdata = try? Data(contentsOf: url) else { return }
         print("Image file: \(url)")
@@ -96,7 +96,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         let savepanel = NSSavePanel()
         savepanel.title = NSLocalizedString("Save raw contents of disk", comment: "")
         savepanel.nameFieldStringValue = filename
-        guard savepanel.runModal() == NSModalResponseOK,
+        guard savepanel.runModal() == NSApplication.ModalResponse.OK,
             let url = savepanel.url else { return }
         let data = diskimage?.rawData
         do {
@@ -118,7 +118,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         dialogue.title = NSLocalizedString("Save file from disk image", comment: "")
         dialogue.nameFieldStringValue = file.name
         guard
-            dialogue.runModal() == NSModalResponseOK,
+            dialogue.runModal() == NSApplication.ModalResponse.OK,
             let url = dialogue.url
             else {
             return
@@ -135,7 +135,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
             print(error)
         }
     }
-    func didDoubleClickRow() {
+    @objc func didDoubleClickRow() {
         print(#function, table.clickedRow)
         let file = files[table.clickedRow]
         /*
@@ -150,8 +150,8 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         }
         guard let filedata = diskimage?.getFile(file: file) else { return }
         let text = N88basic.parse(imgdata: filedata)
-        let storyboard = NSStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateController(withIdentifier: "Basic viewer") as! N88BasicViewController
+        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+        let vc = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Basic viewer")) as! N88BasicViewController
         self.presentViewControllerAsModalWindow(vc)
         vc.textView.textStorage?.font = NSFont(name: "Monaco", size: 11)
         vc.textView.string = text
