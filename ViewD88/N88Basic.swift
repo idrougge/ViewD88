@@ -93,15 +93,19 @@ struct N88basic {
          0xD7: "MOTOR",		0xD8: "PEN",		0xD9: "DATE$",		0xDA: "COM",		0xDB: "KEY",		0xDC: "TIME$",
          0xDD: "WBYTE",		0xDE: "RBYTE",		0xDF: "POLL",		0xE0: "ISET",		0xE1: "IEEE",		0xE2: "IRESET",
          0xE3: "STATUS",	0xE4: "CMD"]
-    static func parse(imgdata:Data) -> String {
+    static func parse(imgdata: Data) -> String {
         var sourceline = Array(imgdata)
         let startptr = Int(sourceline[0])
-        guard startptr < sourceline.count, sourceline[startptr] == 0x00 else { fatalError("Pointer to program start invalid") }
+        guard startptr < sourceline.count, sourceline[startptr] == 0x00 else {
+            let message = "Pointer to program start invalid"
+            assertionFailure(message)
+            return message
+        }
         sourceline = Array(sourceline.dropFirst(startptr))
         var line = ""
         var fulltext = ""
         sourceline.removeFirst()
-        line = "\(Int(sourceline.removeFirst()) + Int(sourceline.removeFirst())*256) "
+        line = "\(Int(sourceline.removeFirst()) + Int(sourceline.removeFirst()) * 256) "
         mainloop:
             while !sourceline.isEmpty {
                 let k = sourceline.removeFirst()
@@ -114,19 +118,26 @@ struct N88basic {
                     sourceline.removeFirst(endquote+1)
                     continue
                 }
+                if k == 0xE9 { // TODO: Find out true meaning of 0xE9 token
+                    line += "'"
+                    let endofline = sourceline.index(of: Token.newline.rawValue) ?? sourceline.endIndex - 1
+                    line += String(bytes: sourceline.prefix(upTo: endofline), encoding: .shiftJIS) ?? "BAD STRING"
+                    sourceline.removeFirst(endofline)
+                    continue
+                }
                 if t == .data {
                     let endofline = sourceline.index(of: 0x00) ?? 0 // Or: use linepointer?
                     line += String(bytes: sourceline.prefix(upTo: endofline), encoding: .shiftJIS) ?? "BAD DATA"
                     sourceline.removeFirst(endofline)
                 }
-                let args:[UInt8] = Array(sourceline[0..<t.bytes()])
+                let args: [UInt8] = Array(sourceline[0..<t.bytes()])
                 sourceline.removeFirst(t.bytes())
                 //print(t)
                 switch t {
                 case .literal: line += String(bytes: [k], encoding: .ascii) ?? "?"
                 case .keyword: //print(Keyword(rawValue: k) ?? "?")
-                    line += (N88basic.keywords[k] ?? "?")
-                case .ffkeyword: line += N88basic.ffkeywords[args.first!] ?? "?"
+                    line += (N88basic.keywords[k] ?? String(format: "%02x", k))
+                case .ffkeyword: line += N88basic.ffkeywords[args.first!] ?? String(format: "%02x", args.first!)
                 case .verysmallinteger: line += "\(k & 0x0f - 1)"
                 case .smallinteger: line += "\(args)"
                 case .biginteger: line += "\((Int(args[0]) + Int(args[1])*256))"
