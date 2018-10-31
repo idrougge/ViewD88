@@ -15,7 +15,6 @@ class N88BasicViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
-        textView.string = "hej"
     }
     
 }

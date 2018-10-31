@@ -33,8 +33,8 @@ class D88_test: XCTestCase {
                 XCTAssert($1>$0)
                 return $1
         }
-        let henceforthallzeros = diskimage.tracktable[firstzero..<diskimage.tracktable.endIndex].reduce(UInt32(0)){$0+$1} == 0
-        XCTAssert(henceforthallzeros)
+        let henceforthAllZeros = diskimage.tracktable[firstzero..<diskimage.tracktable.endIndex].reduce(UInt32(0)){$0+$1} == 0
+        XCTAssert(henceforthAllZeros)
     }
     func testGetFiles() {
         let files = diskimage.getFiles()
