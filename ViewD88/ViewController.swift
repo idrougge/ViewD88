@@ -13,9 +13,9 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     @IBOutlet var table: NSTableView!
     @IBOutlet var textField: NSTextField!
     @IBOutlet var dumpFileButton: NSButton!
-    var diskimage:D88Image?
-    var files:[D88Image.FileEntry] = []
-    var fileurl:URL?
+    private var diskimage: D88Image?
+    private var files: [D88Image.FileEntry] = []
+    private var fileurl: URL?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,12 +34,6 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         table.delegate = self
         table.allowsMultipleSelection = true
         table.doubleAction = #selector(self.didDoubleClickRow)
-    }
-    
-    override var representedObject: Any? {
-        didSet {
-            // Update the view, if already loaded.
-        }
     }
     
     func numberOfRows(in tableView: NSTableView) -> Int {
@@ -69,7 +63,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         case "size"?:
             let size = files[row].size
             cell.textField?.stringValue = "\(size)"
-        default: break
+        default: assertionFailure("Unknown column: \(String(describing: tableColumn))")
         }
         return cell
     }
@@ -79,7 +73,6 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     }
     
     @IBAction func openDocument(_ sender: Any) {
-        print(#function)
         let dialogue = NSOpenPanel()
         dialogue.allowsMultipleSelection = false
         dialogue.canChooseDirectories = false
@@ -87,7 +80,6 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         guard dialogue.runModal() == NSApplication.ModalResponse.OK, let url = dialogue.url else { return }
         textField.stringValue = url.lastPathComponent
         guard let imgdata = try? Data(contentsOf: url) else { return }
-        print("Image file: \(url)")
         diskimage = D88Image(data: imgdata)
         files = diskimage!.getFiles()
         table.reloadData()
@@ -109,30 +101,29 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         }
         catch {
             print(error)
+            presentError(error)
         }
     }
     
     @IBAction func didPressDumpFile(_ sender: Any) {
-        guard table.selectedRow != -1 else {
-            print(#function, "No file selected")
-            return
+        guard table.selectedRow > -1 else {
+            return print(#function, "No file selected")
         }
         let file = files[table.selectedRow]
         print(#function, file.name)
         let dialogue = NSSavePanel()
-        //dialogue.message = "Spara här"
         dialogue.title = NSLocalizedString("Save file from disk image", comment: "")
         dialogue.nameFieldStringValue = file.name
         guard
             dialogue.runModal() == NSApplication.ModalResponse.OK,
             let url = dialogue.url
             else {
-            return
+                return
         }
         writeFile(file, to: url)
     }
     
-    func writeFile(_ file:D88Image.FileEntry, to url:URL) {
+    private func writeFile(_ file: D88Image.FileEntry, to url: URL) {
         let filedata = diskimage?.getFile(file: file)
         do {
             try filedata?.write(to: url)
@@ -140,6 +131,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         }
         catch {
             print(error)
+            presentError(error)
         }
     }
     
