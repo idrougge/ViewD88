@@ -16,8 +16,13 @@ class D88_test: XCTestCase {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
         let imgpath = URL(fileURLWithPath: NSHomeDirectory()+"/Documents/d88-swift/basic.d88")
-        guard let imgdata = try? Data(contentsOf: imgpath) else { fatalError("Fel vid inläsning av fil")}
-        diskimage = D88Image(data: imgdata)
+        do {
+            let imgdata = try Data(contentsOf: imgpath)
+            diskimage = D88Image(data: imgdata)
+        } catch {
+            continueAfterFailure = false
+            XCTFail(error.localizedDescription)
+        }
     }
     
     override func tearDown() {
