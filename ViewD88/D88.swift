@@ -8,9 +8,9 @@
 
 import Foundation
 
-typealias Byte=UInt8
-typealias Word=UInt16
-typealias LongWord=UInt32
+typealias Byte = UInt8
+typealias Word = UInt16
+typealias LongWord = UInt32
 
 enum DiskimageFormat {
     case D88
@@ -19,66 +19,64 @@ enum DiskimageFormat {
 protocol Diskimage{}
 
 protocol File {
-    var name:String {get}
-    var size:Int {get}
+    var name: String {get}
+    var size: Int {get}
 }
 
-struct D88Image:Diskimage {
-    let type:DiskimageFormat = .D88
+struct D88Image: Diskimage {
+    let type: DiskimageFormat = .D88
     enum Filesystem {
         case n88basic
         case microdiskbasic
         case custom
     }
-    struct Sector:CustomStringConvertible {
-        let c:Byte  // track
-        let h:Byte  // head
-        let r:Byte  // sector
-        let n:Byte  // length
-        let sectorcount:Word
-        let density:Byte
-        let deleted:Byte
-        let status:Byte
-        let padding:(Byte,Byte,Byte,Byte,Byte)
-        let sectorsize:Word
-        var tracklength:Int {
-            get {
-                return Int(sectorcount * sectorsize)
-            }
+    struct Sector: CustomStringConvertible {
+        let c: Byte  // track
+        let h: Byte  // head
+        let r: Byte  // sector
+        let n: Byte  // length
+        let sectorcount: Word
+        let density: Byte
+        let deleted: Byte
+        let status: Byte
+        let padding: (Byte,Byte,Byte,Byte,Byte)
+        let sectorsize: Word
+        var tracklength: Int {
+            return Int(sectorcount * sectorsize)
         }
-        var description:String {
+        var description: String {
             return "Cyl: \(c) Head: \(h) Sector: \(r) Sectorlength: \(n) Sectors: \(sectorcount) Sector size: \(sectorsize)"
         }
         // FIXME: Incorrect image format (MESS format) may report head counts > 2
-        init(data:Data) {
+        init(data: Data) {
             self = data.get(from: data.startIndex, to: data.endIndex)
         }
     }
     
-    struct DiskHeader {
-        enum Disktype:Int{
+    public struct DiskHeader {
+        enum Disktype: Int{
             case _2D  = 0x00 // DS/DD 40 tracks
             case _2DD = 0x10 // DS/DD 80 tracks
             case _2HD = 0x20 // DS/HD 80 tracks
             case _1D  = 0x40 // SS/DD 40 tracks
         }
-        let label:String
-        let wrp:Bool
-        let disktype:Disktype
-        var disksize:UInt32=0xFFFFFFFF
-        init(data:Data){
+        let label: String
+        let wrp: Bool
+        let disktype: Disktype
+        var disksize: UInt32=0xFFFFFFFF
+        init(data: Data){
             self.label = data.withUnsafeBytes{ (src:UnsafePointer<CChar>) -> String in return String(cString: src) }
             self.wrp = data[26] == 0x10
             self.disktype = Disktype(rawValue: Int(data[27])) ?? ._2D
             self.disksize = data.get(from: 28, to: 32)
-            print("Skapade DiskHeader med storlek \(disksize) byte av disktyp \(disktype), \(wrp ? "" : "ej") skrivskyddad och namn \"\(label)\"")
+            print("Created DiskHeader of size \(disksize) byte of type \(disktype), \(wrp ? "" : "not") writeprotected, named \"\(label)\"")
         }
     }
-    enum FATcell{
+    private enum FATcell{
         case empty
         case reserved
-        case cluster(next:UInt8)
-        case sector(last:Int)
+        case cluster(next: UInt8)
+        case sector(last: Int)
         case bad
         init(_ nr: UInt8){
             switch nr {
@@ -91,12 +89,12 @@ struct D88Image:Diskimage {
         }
     }
     
-    struct Track { // Ett spår borde innehålla en uppsättning sektorer, men de kanske måste beräknas fram
-        let c,h,r,n:Int
-        let content:[Byte]
+    public struct Track { // Ett spår borde innehålla en uppsättning sektorer, men de kanske måste beräknas fram
+        let c,h,r,n: Int
+        let content: [Byte]
     }
-    struct FileEntry:File {
-        enum Attributes:Int {
+    public struct FileEntry: File {
+        enum Attributes: Int {
             case ASC = 0x00
             case BIN = 0x01
             case BAS = 0x80
@@ -105,22 +103,22 @@ struct D88Image:Diskimage {
             case RAW = 0x40
             case BAD = 0xFF
         }
-        private let forename:String
-        private let ext:String
-        var name:String {
+        private let forename: String
+        private let ext: String
+        var name: String {
             get {
                 let name = self.forename.trimmingCharacters(in: .whitespaces)
                 let ext = self.ext.trimmingCharacters(in: .whitespaces)
                 return ext.isEmpty ? name : name + "." + ext
             }
         }
-        let attributes:Attributes
-        let cluster:UInt8
-        let startaddr:UInt16    // Starting address in N88 format is saved in first 16 bits of file entry, ending address in following 16 bits.
+        let attributes: Attributes
+        let cluster: UInt8
+        let startaddr: UInt16    // Starting address in N88 format is saved in first 16 bits of file entry, ending address in following 16 bits.
         // Subtract 1 from ending address.
-        let execaddr:UInt16
-        var size:Int = 0
-        init(data:Data){
+        let execaddr: UInt16
+        var size: Int = 0
+        init(data: Data){
             //self.forename = data.subdata(in: 0 ..< 6).cleanAscii()
             self.forename = String(data: data.subdata(in: 0 ..< 6), encoding: .shiftJIS) ?? "BAD NAME"
             self.ext = ( String(data: data.subdata(in: 6 ..< 9), encoding: .ascii) ?? "" ).trimmingCharacters(in: .controlCharacters)
@@ -133,13 +131,15 @@ struct D88Image:Diskimage {
         }
     }
     
-    internal func listFiles() -> [String] {
+    public func listFiles() -> [String] {
         return self.getFiles().map{ $0.name }
     }
-    func seekTrack(_ nr: Int) -> Int {
+    
+    private func seekTrack(_ nr: Int) -> Int {
         return Int(tracktable[nr])
     }
-    func getTrack(_ nr: Int) -> Data {
+    
+    private func getTrack(_ nr: Int) -> Data {
         let header = getTrackHeader(nr)
         let from = Int(self.tracktable[nr])
         let tracklength = Int( (header.sectorsize + 16) * header.sectorcount )
@@ -147,12 +147,14 @@ struct D88Image:Diskimage {
         let to = from + tracklength
         return self.data.subdata(in: from ..< to)
     }
-    func getTrackHeader(_ nr: Int) -> Sector {
+    
+    private func getTrackHeader(_ nr: Int) -> Sector {
         let offset = Int(self.tracktable[nr])
         let headerdata = self.data.subdata(in: offset ..< offset+16)
         return Sector(data: headerdata)
     }
-    func getSector(track: Int, nr: Int) -> (sector: Sector, data: Data)? {
+    
+    private func getSector(track: Int, nr: Int) -> (sector: Sector, data: Data)? {
         let trackdata = getTrack(track)
         let trackheaderdata = trackdata.subdata(in: 0..<16)
         let trackheader = Sector(data: trackheaderdata)
@@ -166,7 +168,8 @@ struct D88Image:Diskimage {
         print("getSector: sector \(sector.r) = \( Int(sector.r) == (nr + Int(1)) ? "OK" : "NOT OK" )")
         return (sector,sectordata)
     }
-    func getSectors(track: Int, range: CountableRange<Int>) -> Data {
+    
+    private func getSectors(track: Int, range: CountableRange<Int>) -> Data {
         let trackdata = getTrack(track)
         let trackheaderdata = trackdata.subdata(in: 0..<16)
         let trackheader = Sector(data: trackheaderdata)
@@ -180,15 +183,18 @@ struct D88Image:Diskimage {
         }
         return data
     }
-    func getSectors(track: Int) -> Data {
+    
+    private func getSectors(track: Int) -> Data {
         let trackheader = getTrackHeader(track)
         let sectorcount = Int(trackheader.sectorcount)
         return getSectors(track: track, range: 0 ..< sectorcount)
     }
-    func getFile(file:FileEntry) -> Data {
+    
+    public func getFile(file: FileEntry) -> Data {
         return getFile(cluster: file.cluster)
     }
-    func getFile(cluster:UInt8) -> Data {
+    
+    private func getFile(cluster: UInt8) -> Data {
         switch fat[Int(cluster)] {
         case .cluster(let next):
             let (track, sectors) = cluster2phys(cluster: cluster)
@@ -201,7 +207,8 @@ struct D88Image:Diskimage {
         }
         return Data()
     }
-    func getFiles(tracknr:Int = 37) -> [FileEntry] {
+    
+    public func getFiles(tracknr: Int = 37) -> [FileEntry] {
         var files = [FileEntry]()
         guard case .n88basic = self.filesystem else { return files }
         print("filesystem:",self.filesystem)
@@ -225,7 +232,8 @@ struct D88Image:Diskimage {
         }
         return files
     }
-    func getFilesize(file:FileEntry) -> Int {
+    
+    public func getFilesize(file: FileEntry) -> Int {
         print(#function,file)
         var size=0
         var cl = Int(file.cluster)
@@ -247,14 +255,16 @@ struct D88Image:Diskimage {
         }
         return size
     }
-    func getFAT() -> [FATcell] {
+    
+    private func getFAT() -> [FATcell] {
         let fatSectorNr = 13
         guard let fatSector = getSector(track: fatTrack, nr: fatSectorNr) else {
             return [FATcell](repeatElement(.bad, count: 0x9f))
         }
         return fatSector.data[0...0x9f].map(FATcell.init)
     }
-    func cluster2phys(cluster:UInt8) -> (Int, CountableRange<Int>) {
+    
+    private func cluster2phys(cluster: UInt8) -> (Int, CountableRange<Int>) {
         let cluster = Int(cluster)
         let track = cluster >> 1
         let sector = 8 * (cluster % 2)
@@ -266,12 +276,13 @@ struct D88Image:Diskimage {
         }
         return (track, sector ..< sector+sectorcount)
     }
-    fileprivate var data:Data
-    fileprivate var fatTrack = 37
-    fileprivate var fat:[FATcell] = []
-    public let tracks:Int
-    public var surfaces:Int
-    public var filesystem:Filesystem {
+    
+    private var data: Data
+    private var fatTrack = 37
+    private var fat: [FATcell] = []
+    public let tracks: Int
+    public var surfaces: Int
+    public var filesystem: Filesystem {
         // If IPL contains string "PPC-8001 Micro Disk Basic" that is the filesystem. Maybe without inital P.
         // One may guard by checking if IPL is reserved in FAT.
         get {   // Cluster 0 = IPL
@@ -281,10 +292,11 @@ struct D88Image:Diskimage {
             }
         }
     }
-    internal var tracktable:ContiguousArray<LongWord>
-    internal var header:DiskHeader
     
-    internal var rawData: Data {
+    internal var tracktable: ContiguousArray<LongWord>
+    internal var header: DiskHeader
+    
+    public var rawData: Data {
         get {
             var rawData = Data()
             for track in 0 ..< tracks {
@@ -295,7 +307,7 @@ struct D88Image:Diskimage {
         }
     }
     
-    init(data:Data){
+    init(data: Data){
         self.data = data
         self.surfaces = 0
         let tracktable = ContiguousArray<LongWord>(data.subdata(in: 0x20 ..< 0x2b0))
