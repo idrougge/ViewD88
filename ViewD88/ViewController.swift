@@ -21,6 +21,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         textField.isEditable = false
+        #if DEBUG
         let imgpath = URL(fileURLWithPath: NSHomeDirectory()+"/Documents/d88-swift/basic.d88")
         fileurl = imgpath
         textField.stringValue = imgpath.lastPathComponent
@@ -28,6 +29,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
             diskimage = D88Image(data: imgdata)
             files = diskimage!.getFiles()
         }
+        #endif
         table.dataSource = self
         table.delegate = self
         table.allowsMultipleSelection = true
@@ -43,6 +45,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     func numberOfRows(in tableView: NSTableView) -> Int {
         return files.count
     }
+    
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         //print(#function,tableColumn!.identifier)
         let cell = tableView.makeView(withIdentifier: tableColumn!.identifier, owner: self) as! NSTableCellView
@@ -70,11 +73,12 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         }
         return cell
     }
+    
     func tableViewSelectionDidChange(_ notification: Notification) {
         dumpFileButton.isEnabled = table.selectedRow != -1
     }
     
-    @IBAction func didPressSelectButton(_ sender: Any) {
+    @IBAction func openDocument(_ sender: Any) {
         print(#function)
         let dialogue = NSOpenPanel()
         dialogue.allowsMultipleSelection = false
@@ -89,6 +93,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         table.reloadData()
         
     }
+    
     @IBAction func didPressDumpContents(_ sender: Any) {
         guard let fileurl = fileurl else {return}
         let filename = fileurl.deletingPathExtension().appendingPathExtension("2d").lastPathComponent
@@ -106,6 +111,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
             print(error)
         }
     }
+    
     @IBAction func didPressDumpFile(_ sender: Any) {
         guard table.selectedRow != -1 else {
             print(#function, "No file selected")
@@ -125,6 +131,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         }
         writeFile(file, to: url)
     }
+    
     func writeFile(_ file:D88Image.FileEntry, to url:URL) {
         let filedata = diskimage?.getFile(file: file)
         do {
@@ -135,6 +142,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
             print(error)
         }
     }
+    
     @objc func didDoubleClickRow() {
         print(#function, table.clickedRow)
         let file = files[table.clickedRow]
