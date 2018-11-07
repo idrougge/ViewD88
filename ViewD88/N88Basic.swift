@@ -29,7 +29,7 @@ struct N88basic {
         case literal = 0x40
         //case illegal = -1
         /// Number of bytes used as argument to token
-        func bytes() -> Int {
+        var trailingBytes: Int {
             switch self {
             case .newline: return 4 // Newline is followed by linkpointer (two bytes) to next line and linenumber (two bytes)
             case .literal: return 0
@@ -54,8 +54,11 @@ struct N88basic {
                 self = t
                 return
             }
+            if key & 0x80 > 0 {
+                self = .keyword
+                return
+            }
             switch key {
-            case 0x81...0xfe: self = .keyword
             case 0x11...0x1a: self = .verysmallinteger
             default: self = .literal
             }
@@ -110,7 +113,7 @@ struct N88basic {
             while !sourceline.isEmpty {
                 let k = sourceline.removeFirst()
                 let t = Token(k)
-                guard sourceline.count >= t.bytes() else { break }
+                guard sourceline.count >= t.trailingBytes else { break }
                 if t == .quote {
                     line += "\""
                     let endquote = sourceline.index(of: Token.quote.rawValue) ?? 0
@@ -130,8 +133,8 @@ struct N88basic {
                     line += String(bytes: sourceline.prefix(upTo: endofline), encoding: .shiftJIS) ?? "BAD DATA"
                     sourceline.removeFirst(endofline)
                 }
-                let args: [UInt8] = Array(sourceline[0..<t.bytes()])
-                sourceline.removeFirst(t.bytes())
+                let args: [UInt8] = Array(sourceline[0..<t.trailingBytes])
+                sourceline.removeFirst(t.trailingBytes)
                 //print(t)
                 switch t {
                 case .literal: line += String(bytes: [k], encoding: .ascii) ?? "?"
